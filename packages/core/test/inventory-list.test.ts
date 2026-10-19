@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { inventory } from "../src/inventory";
 
 test("inventory optionally retains eligible paths and respects exclusions and entry bounds", async () => {
@@ -20,8 +20,9 @@ test("inventory optionally retains eligible paths and respects exclusions and en
       "protected/a.ts": "protected",
     };
     for (const [path, content] of Object.entries(files)) {
-      await mkdir(join(root, path, ".."), { recursive: true });
-      await writeFile(join(root, path), content);
+      const filePath = join(root, path);
+      await mkdir(dirname(filePath), { recursive: true });
+      await writeFile(filePath, content);
     }
     const input = {
       root,
